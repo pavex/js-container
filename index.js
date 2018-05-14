@@ -1,6 +1,6 @@
 /**
  * @fileoverview Basic IoC container with constructor injection and React components support.
- * @author Pavel Mach·Ëek <pavex@ines.cz>
+ * @author Pavel Mach√°ƒçek <pavex@ines.cz>
  */
 import Container from './src/Container.js';
 import ReactContainer from './src/ReactContainer.js';

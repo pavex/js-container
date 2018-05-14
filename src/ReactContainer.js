@@ -1,6 +1,6 @@
 /**
  * @fileoverview React IoC container.
- * @author Pavel Macháèek <pavex@ines.cz>
+ * @author Pavel MachÃ¡Äek <pavex@ines.cz>
  */
 import React from 'react';
 import Container from './Container';
