@@ -1,0 +1,30 @@
+{
+  "name": "js-container",
+  "version": "1.0.1",
+  "description": "Basic IoC container with constructor injection and React components support.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavex/js-container.git"
+  },
+  "keywords": [
+    "di",
+    "ioc",
+    "container",
+    "component",
+    "element",
+    "inject",
+    "react",
+    "reactnative",
+    "javascript"
+  ],
+  "author": "Pavel Macháček <pavex@ines.cz>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pavex/js-container/issues"
+  },
+  "homepage": "https://github.com/pavex/js-container#readme"
+}
