@@ -1,6 +1,6 @@
 /**
  * @fileoverview Basic IoC container with constructor injection.
- * @author Pavel Mach√°ƒçek <pavex@ines.cz>
+ * @author Pavel Mach·Ëek <pavex@ines.cz>
  */
 
 
@@ -99,9 +99,10 @@ export default class Container {
  * @param {Object|Array}
  */
 	_reference(value) {
-		if (value.name && value.constructor instanceof Function) {
-			value = this.get(value.name);
+		if (!!value && !!value.name && this._classes.has(value.name)) {
+			return this.get(value.name);
 		}
+		return value;
 	};
 
 
@@ -113,11 +114,13 @@ export default class Container {
  * @param {Object|Array}
  */
 	_references(traversable) {
+		let values = [];
 		for (let key in traversable) {
 			if (traversable.hasOwnProperty(key)) {
-				this._reference(traversable[key]);
+				values[key] = this._reference(traversable[key]);
 			}
 		}
+		return values;
 	};
 
 
@@ -170,8 +173,8 @@ export default class Container {
  */
 	_create(name) {
 		let {classname, params, setters} = this._classes.get(name);
-		this._references(params);
-		this._references(setters);
+		params = this._references(params);
+		setters = this._references(setters);
 		this._instances.set(name, this._createInstance(
 			name, classname, params, setters
 		));

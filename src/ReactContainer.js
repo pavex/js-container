@@ -1,6 +1,6 @@
 /**
  * @fileoverview React IoC container.
- * @author Pavel Mach√°ƒçek <pavex@ines.cz>
+ * @author Pavel Mach·Ëek <pavex@ines.cz>
  */
 import React from 'react';
 import Container from './Container';
@@ -15,10 +15,10 @@ export default class ReactContainer extends Container {
 /** @overrride */
 	_reference(value) {
 // check if value is a React component, no create instance
-		if (value.prototype && value.prototype.isReactComponent) {
-			return;
+		if (!!value.prototype && !!value.prototype.isReactComponent) {
+			return value;
 		}
-		super._reference(value);
+		return super._reference(value);
 	};
 
 
