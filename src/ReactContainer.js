@@ -26,9 +26,9 @@ export default class ReactContainer extends Container {
 
 
 /** @overrride */
-	_createInstance(name, classname, params, setters) {
+	_createInstance(classname, params, setters) {
 		if (React.Component.isPrototypeOf(classname)) {
-			return React.createElement(classname, setters, null);
+			return React.createElement(classname, params, null);
 		}
 		return super._createInstance(...arguments);
 	};

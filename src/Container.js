@@ -13,68 +13,8 @@ export default class Container {
 /** @private @type {Map} */
 	_instances = new Map();
 
-
-
-
-
-/**
- * Create getter function name
- * @private
- * @param {string} method
- * @param {string} string
- * @return {string}
- */	
-	_getMethodName(method, string) {
-		return method + string.charAt(0).toUpperCase() + string.slice(1);
-	}
-
-
-
-
-
-/**
- * Get class name helper
- * @private
- * @return {string|Constructor} classname
- */
-	_getClassName(classname) {
-		return !!classname.name ? classname.name : classname;
-	};
-
-
-
-
-
-/**
- * Inject getter into container by name
- * @private
- * @param {string} name
- * @return {Object}
- */
-	_inject(name) {
-		let getter = this._getMethodName('get', name);
-		this[getter] = () => this.get(name);
-	};
-
-
-
-
-/**
- * @param {string} name
- * @param {Class} classname
- * @param {Array=|Object=} opt_params
- * @param {Object=} opt_setters
- */	
-	setName(name, classname, opt_params, opt_setters) {
-		if (!classname.name) {
-			throw Error('Invalid class.');
-		}
-		let is_object = !!opt_params && opt_params.constructor === Object;	
-		let params = is_object ? [] : opt_params || [];
-		let setters = is_object ? opt_params : opt_setters || {};
-		this._classes.set(name, {classname, params, setters});
-		this._inject(name);
-	};
+/** @private @type {Number} */
+	static _injectedIndex = 1;
 
 
 
@@ -86,8 +26,11 @@ export default class Container {
  * @param {Object=} opt_setters
  */	
 	set(classname, opt_params, opt_setters) {
-		let name = classname.name;
-		this.setName(name, classname, opt_params, opt_setters);
+		let index = Container._injectedIndex++;
+		classname._injectedIndex = index;
+		let params = opt_params || [];
+		let setters = opt_setters || {};
+		this._classes.set(index, {classname, params, setters});
 	};
 
 
@@ -99,10 +42,7 @@ export default class Container {
  * @param {Object|Array}
  */
 	_reference(value) {
-		if (!!value && !!value.name && this._classes.has(value.name)) {
-			return this.get(value.name);
-		}
-		return value;
+		return this.get(value);
 	};
 
 
@@ -135,10 +75,8 @@ export default class Container {
 	_setters(instance, setters) {
 		for (let name in setters) {
 			if (setters.hasOwnProperty(name)) {
-				let setter = this._getMethodName('set', name);
-				if (!!instance[setter]) {
-					let value = setters[name];
-					instance[setter](value);
+				if (!!instance[name]) {
+					instance[name](setters[name]);
 				}
 			}
 		}
@@ -150,13 +88,12 @@ export default class Container {
 
 /**
  * @protected
- * @param {string} name
  * @param {Constructor} classname
  * @param {Array} params
  * @param {Object} setters
  * @return {Object}
  */	
-	_createInstance(name, classname, params, setters) {
+	_createInstance(classname, params, setters) {
 		let instance = new classname(...params);
 		this._setters(instance, setters);
 		return instance;
@@ -168,15 +105,15 @@ export default class Container {
 
 /**
  * @pivate
- * @param {string} name
+ * @param {string} index
  * @return {Object}
  */
-	_create(name) {
-		let {classname, params, setters} = this._classes.get(name);
+	_create(index) {
+		let {classname, params, setters} = this._classes.get(index);
 		params = this._references(params);
 		setters = this._references(setters);
-		this._instances.set(name, this._createInstance(
-			name, classname, params, setters
+		this._instances.set(index, this._createInstance(
+			classname, params, setters
 		));
 	};
 
@@ -185,12 +122,11 @@ export default class Container {
 
 
 /**
- * @param {string} classname
+ * @param {string} value
  * @return {boolean}
  */
-	has(classname) {
-		let name = this._getClassName(classname);
-		return this._classes.has(name);
+	has(value) {
+		return value._injectedIndex > 0;
 	};
 
 
@@ -201,15 +137,19 @@ export default class Container {
  * @param {string} classname
  * @return {Object}
  */
-	get(classname) {
-		let name = this._getClassName(classname);
-		if (!this._instances.has(name)) {
-			if (!this.has(name)) {
-				throw Error('Class `'+ name + '` not set.');
+//	get(classname) {
+	get(value) {
+		if (value._injectedIndex) {
+			let index = value._injectedIndex;
+			if (!this._instances.has(index)) {
+				if (!this._classes.has(index)) {
+					throw Error('Class `'+ index + '` not set.');
+				}
+				this._create(index);
 			}
-			this._create(name);
+			return this._instances.get(index);
 		}
-		return this._instances.get(name);
+		return value;
 	};
 
 
