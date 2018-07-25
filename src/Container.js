@@ -7,14 +7,14 @@
 export default class Container {
 
 
-	constructor() {
+/** @private @type {Map} */
+	_classes = new Map();
 
 /** @private @type {Map} */
-		this._classes = new Map();
+	_instances = new Map();
 
-/** @private @type {Map} */
-		this._instances = new Map();
-	};
+/** @private @type {Number} */
+	static _injectedIndex = 1;
 
 
 
@@ -153,8 +153,4 @@ export default class Container {
 	};
 
 
-};
-
-
-/** @private @static @type {Number} */
-Container._injectedIndex = 1;
+}
